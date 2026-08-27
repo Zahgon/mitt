@@ -1,0 +1,1545 @@
+[
+  {
+    "name": "on-emit-basic",
+    "ops": [
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "h": "h1",
+        "kind": "single"
+      },
+      {
+        "op": "state"
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "payload": {
+          "t": "str",
+          "v": "bar"
+        }
+      },
+      {
+        "op": "state"
+      }
+    ]
+  },
+  {
+    "name": "emit-unknown-type-noop",
+    "ops": [
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "h": "h1",
+        "kind": "single"
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "nope"
+        },
+        "payload": {
+          "t": "num",
+          "v": 1
+        }
+      },
+      {
+        "op": "state"
+      }
+    ]
+  },
+  {
+    "name": "multiple-handlers-order",
+    "ops": [
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "h": "h1",
+        "kind": "single"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "h": "h2",
+        "kind": "single"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "h": "h3",
+        "kind": "single"
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "payload": {
+          "t": "num",
+          "v": 7
+        }
+      },
+      {
+        "op": "state"
+      }
+    ]
+  },
+  {
+    "name": "duplicate-registration-fires-twice",
+    "ops": [
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "h": "h1",
+        "kind": "single"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "h": "h1",
+        "kind": "single"
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "payload": {
+          "t": "str",
+          "v": "x"
+        }
+      },
+      {
+        "op": "state"
+      }
+    ]
+  },
+  {
+    "name": "off-removes-first-duplicate-only",
+    "ops": [
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "h": "h1",
+        "kind": "single"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "h": "h1",
+        "kind": "single"
+      },
+      {
+        "op": "off",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "h": "h1"
+      },
+      {
+        "op": "state"
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "payload": {
+          "t": "str",
+          "v": "x"
+        }
+      }
+    ]
+  },
+  {
+    "name": "off-unregistered-handler-is-noop",
+    "ops": [
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "h": "h1",
+        "kind": "single"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "h": "h2",
+        "kind": "single"
+      },
+      {
+        "op": "off",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "h": "hNever"
+      },
+      {
+        "op": "state"
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "payload": {
+          "t": "num",
+          "v": 1
+        }
+      }
+    ]
+  },
+  {
+    "name": "off-unknown-type-does-not-create-entry",
+    "ops": [
+      {
+        "op": "off",
+        "type": {
+          "t": "str",
+          "v": "ghost"
+        },
+        "h": "h1"
+      },
+      {
+        "op": "off",
+        "type": {
+          "t": "str",
+          "v": "ghost2"
+        },
+        "h": null
+      },
+      {
+        "op": "state"
+      }
+    ]
+  },
+  {
+    "name": "offall-clears-to-empty-keeps-key",
+    "ops": [
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "h": "h1",
+        "kind": "single"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "h": "h2",
+        "kind": "single"
+      },
+      {
+        "op": "off",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "h": null
+      },
+      {
+        "op": "state"
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "payload": {
+          "t": "num",
+          "v": 1
+        }
+      }
+    ]
+  },
+  {
+    "name": "off-then-reregister",
+    "ops": [
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "h": "h1",
+        "kind": "single"
+      },
+      {
+        "op": "off",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "h": "h1"
+      },
+      {
+        "op": "state"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "h": "h1",
+        "kind": "single"
+      },
+      {
+        "op": "state"
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "payload": {
+          "t": "str",
+          "v": "again"
+        }
+      }
+    ]
+  },
+  {
+    "name": "wildcard-receives-type-and-payload",
+    "ops": [
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "h": "h1",
+        "kind": "single"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "*"
+        },
+        "h": "w1",
+        "kind": "wild"
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "payload": {
+          "t": "str",
+          "v": "p1"
+        }
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "bar"
+        },
+        "payload": {
+          "t": "num",
+          "v": 2
+        }
+      },
+      {
+        "op": "state"
+      }
+    ]
+  },
+  {
+    "name": "wildcard-only",
+    "ops": [
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "*"
+        },
+        "h": "w1",
+        "kind": "wild"
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "anything"
+        },
+        "payload": {
+          "t": "str",
+          "v": "p"
+        }
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "other"
+        },
+        "payload": {
+          "t": "undef"
+        }
+      },
+      {
+        "op": "state"
+      }
+    ]
+  },
+  {
+    "name": "dispatch-order-typed-before-wildcard",
+    "ops": [
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "*"
+        },
+        "h": "w1",
+        "kind": "wild"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "h": "h1",
+        "kind": "single"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "*"
+        },
+        "h": "w2",
+        "kind": "wild"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "h": "h2",
+        "kind": "single"
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "payload": {
+          "t": "num",
+          "v": 9
+        }
+      },
+      {
+        "op": "state"
+      }
+    ]
+  },
+  {
+    "name": "emit-wildcard-key-double-invokes",
+    "ops": [
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "*"
+        },
+        "h": "w1",
+        "kind": "wild"
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "*"
+        },
+        "payload": {
+          "t": "num",
+          "v": 1
+        }
+      },
+      {
+        "op": "state"
+      }
+    ]
+  },
+  {
+    "name": "emit-wildcard-key-string-payload",
+    "ops": [
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "*"
+        },
+        "h": "w1",
+        "kind": "wild"
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "*"
+        },
+        "payload": {
+          "t": "str",
+          "v": "pay"
+        }
+      },
+      {
+        "op": "state"
+      }
+    ]
+  },
+  {
+    "name": "emit-wildcard-key-undefined-payload",
+    "ops": [
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "*"
+        },
+        "h": "w1",
+        "kind": "wild"
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "*"
+        },
+        "payload": {
+          "t": "undef"
+        }
+      },
+      {
+        "op": "state"
+      }
+    ]
+  },
+  {
+    "name": "single-arg-handler-on-wildcard-gets-type",
+    "ops": [
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "*"
+        },
+        "h": "h1",
+        "kind": "single"
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "payload": {
+          "t": "str",
+          "v": "PAYLOAD"
+        }
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "bar"
+        },
+        "payload": {
+          "t": "num",
+          "v": 3
+        }
+      },
+      {
+        "op": "state"
+      }
+    ]
+  },
+  {
+    "name": "single-arg-handler-on-wildcard-symbol-type",
+    "ops": [
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "*"
+        },
+        "h": "h1",
+        "kind": "single"
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "sym",
+          "v": "A"
+        },
+        "payload": {
+          "t": "str",
+          "v": "PAYLOAD"
+        }
+      },
+      {
+        "op": "state"
+      }
+    ]
+  },
+  {
+    "name": "wildcard-off",
+    "ops": [
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "*"
+        },
+        "h": "w1",
+        "kind": "wild"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "*"
+        },
+        "h": "w2",
+        "kind": "wild"
+      },
+      {
+        "op": "off",
+        "type": {
+          "t": "str",
+          "v": "*"
+        },
+        "h": "w1"
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "payload": {
+          "t": "num",
+          "v": 1
+        }
+      },
+      {
+        "op": "state"
+      }
+    ]
+  },
+  {
+    "name": "wildcard-offall",
+    "ops": [
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "*"
+        },
+        "h": "w1",
+        "kind": "wild"
+      },
+      {
+        "op": "off",
+        "type": {
+          "t": "str",
+          "v": "*"
+        },
+        "h": null
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "payload": {
+          "t": "num",
+          "v": 1
+        }
+      },
+      {
+        "op": "state"
+      }
+    ]
+  },
+  {
+    "name": "symbol-keys-identity",
+    "ops": [
+      {
+        "op": "on",
+        "type": {
+          "t": "sym",
+          "v": "A"
+        },
+        "h": "h1",
+        "kind": "single"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "sym",
+          "v": "B"
+        },
+        "h": "h2",
+        "kind": "single"
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "sym",
+          "v": "A"
+        },
+        "payload": {
+          "t": "str",
+          "v": "a"
+        }
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "sym",
+          "v": "B"
+        },
+        "payload": {
+          "t": "str",
+          "v": "b"
+        }
+      },
+      {
+        "op": "state"
+      }
+    ]
+  },
+  {
+    "name": "symbol-same-description-distinct",
+    "ops": [
+      {
+        "op": "on",
+        "type": {
+          "t": "sym",
+          "v": "A"
+        },
+        "h": "h1",
+        "kind": "single"
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "sym",
+          "v": "A2"
+        },
+        "payload": {
+          "t": "str",
+          "v": "nope"
+        }
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "sym",
+          "v": "A"
+        },
+        "payload": {
+          "t": "str",
+          "v": "yes"
+        }
+      },
+      {
+        "op": "state"
+      }
+    ]
+  },
+  {
+    "name": "symbol-and-string-coexist",
+    "ops": [
+      {
+        "op": "on",
+        "type": {
+          "t": "sym",
+          "v": "A"
+        },
+        "h": "h1",
+        "kind": "single"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "A"
+        },
+        "h": "h2",
+        "kind": "single"
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "sym",
+          "v": "A"
+        },
+        "payload": {
+          "t": "num",
+          "v": 1
+        }
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "A"
+        },
+        "payload": {
+          "t": "num",
+          "v": 2
+        }
+      },
+      {
+        "op": "state"
+      }
+    ]
+  },
+  {
+    "name": "case-sensitivity",
+    "ops": [
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "h": "h1",
+        "kind": "single"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "FOO"
+        },
+        "h": "h2",
+        "kind": "single"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "Foo"
+        },
+        "h": "h3",
+        "kind": "single"
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "payload": {
+          "t": "num",
+          "v": 1
+        }
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "FOO"
+        },
+        "payload": {
+          "t": "num",
+          "v": 2
+        }
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "Foo"
+        },
+        "payload": {
+          "t": "num",
+          "v": 3
+        }
+      },
+      {
+        "op": "off",
+        "type": {
+          "t": "str",
+          "v": "FOO"
+        },
+        "h": "h1"
+      },
+      {
+        "op": "state"
+      }
+    ]
+  },
+  {
+    "name": "exotic-string-keys",
+    "ops": [
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "constructor"
+        },
+        "h": "h1",
+        "kind": "single"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "__proto__"
+        },
+        "h": "h2",
+        "kind": "single"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": ""
+        },
+        "h": "h3",
+        "kind": "single"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "hasOwnProperty"
+        },
+        "h": "h4",
+        "kind": "single"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "toString"
+        },
+        "h": "h5",
+        "kind": "single"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "日本語 🎉"
+        },
+        "h": "h6",
+        "kind": "single"
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "constructor"
+        },
+        "payload": {
+          "t": "num",
+          "v": 1
+        }
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "__proto__"
+        },
+        "payload": {
+          "t": "num",
+          "v": 2
+        }
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": ""
+        },
+        "payload": {
+          "t": "num",
+          "v": 3
+        }
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "hasOwnProperty"
+        },
+        "payload": {
+          "t": "num",
+          "v": 4
+        }
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "toString"
+        },
+        "payload": {
+          "t": "num",
+          "v": 5
+        }
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "日本語 🎉"
+        },
+        "payload": {
+          "t": "num",
+          "v": 6
+        }
+      },
+      {
+        "op": "state"
+      }
+    ]
+  },
+  {
+    "name": "insertion-order-preserved",
+    "ops": [
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "z"
+        },
+        "h": "h1",
+        "kind": "single"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "a"
+        },
+        "h": "h2",
+        "kind": "single"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "m"
+        },
+        "h": "h3",
+        "kind": "single"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "b"
+        },
+        "h": "h4",
+        "kind": "single"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "y"
+        },
+        "h": "h5",
+        "kind": "single"
+      },
+      {
+        "op": "state"
+      },
+      {
+        "op": "off",
+        "type": {
+          "t": "str",
+          "v": "m"
+        },
+        "h": null
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "c"
+        },
+        "h": "h6",
+        "kind": "single"
+      },
+      {
+        "op": "state"
+      }
+    ]
+  },
+  {
+    "name": "undefined-payload",
+    "ops": [
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "h": "h1",
+        "kind": "single"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "*"
+        },
+        "h": "w1",
+        "kind": "wild"
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "payload": {
+          "t": "undef"
+        }
+      },
+      {
+        "op": "state"
+      }
+    ]
+  },
+  {
+    "name": "number-payloads",
+    "ops": [
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "n"
+        },
+        "h": "h1",
+        "kind": "single"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "*"
+        },
+        "h": "w1",
+        "kind": "wild"
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "n"
+        },
+        "payload": {
+          "t": "num",
+          "v": 0
+        }
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "n"
+        },
+        "payload": {
+          "t": "num",
+          "v": -1
+        }
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "n"
+        },
+        "payload": {
+          "t": "num",
+          "v": 2147483647
+        }
+      },
+      {
+        "op": "state"
+      }
+    ]
+  },
+  {
+    "name": "many-events-interleaved",
+    "ops": [
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "a"
+        },
+        "h": "h1",
+        "kind": "single"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "b"
+        },
+        "h": "h2",
+        "kind": "single"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "*"
+        },
+        "h": "w1",
+        "kind": "wild"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "a"
+        },
+        "h": "h3",
+        "kind": "single"
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "a"
+        },
+        "payload": {
+          "t": "num",
+          "v": 1
+        }
+      },
+      {
+        "op": "off",
+        "type": {
+          "t": "str",
+          "v": "a"
+        },
+        "h": "h1"
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "a"
+        },
+        "payload": {
+          "t": "num",
+          "v": 2
+        }
+      },
+      {
+        "op": "off",
+        "type": {
+          "t": "str",
+          "v": "b"
+        },
+        "h": null
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "b"
+        },
+        "payload": {
+          "t": "num",
+          "v": 3
+        }
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "b"
+        },
+        "h": "h4",
+        "kind": "single"
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "b"
+        },
+        "payload": {
+          "t": "num",
+          "v": 4
+        }
+      },
+      {
+        "op": "off",
+        "type": {
+          "t": "str",
+          "v": "*"
+        },
+        "h": "w1"
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "a"
+        },
+        "payload": {
+          "t": "num",
+          "v": 5
+        }
+      },
+      {
+        "op": "state"
+      }
+    ]
+  },
+  {
+    "name": "handler-shared-across-types",
+    "ops": [
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "a"
+        },
+        "h": "h1",
+        "kind": "single"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "b"
+        },
+        "h": "h1",
+        "kind": "single"
+      },
+      {
+        "op": "off",
+        "type": {
+          "t": "str",
+          "v": "a"
+        },
+        "h": "h1"
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "a"
+        },
+        "payload": {
+          "t": "num",
+          "v": 1
+        }
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "b"
+        },
+        "payload": {
+          "t": "num",
+          "v": 2
+        }
+      },
+      {
+        "op": "state"
+      }
+    ]
+  },
+  {
+    "name": "wildcard-handler-also-on-typed",
+    "ops": [
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "h": "w1",
+        "kind": "wild"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "*"
+        },
+        "h": "w1",
+        "kind": "wild"
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "payload": {
+          "t": "str",
+          "v": "p"
+        }
+      },
+      {
+        "op": "state"
+      }
+    ]
+  },
+  {
+    "name": "emit-before-any-registration",
+    "ops": [
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "payload": {
+          "t": "num",
+          "v": 1
+        }
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "*"
+        },
+        "payload": {
+          "t": "undef"
+        }
+      },
+      {
+        "op": "state"
+      },
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "h": "h1",
+        "kind": "single"
+      },
+      {
+        "op": "emit",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "payload": {
+          "t": "num",
+          "v": 2
+        }
+      }
+    ]
+  },
+  {
+    "name": "repeated-offall-idempotent",
+    "ops": [
+      {
+        "op": "on",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "h": "h1",
+        "kind": "single"
+      },
+      {
+        "op": "off",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "h": null
+      },
+      {
+        "op": "off",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "h": null
+      },
+      {
+        "op": "off",
+        "type": {
+          "t": "str",
+          "v": "foo"
+        },
+        "h": null
+      },
+      {
+        "op": "state"
+      }
+    ]
+  }
+]

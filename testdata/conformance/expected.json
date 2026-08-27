@@ -1,0 +1,1386 @@
+{
+  "on-emit-basic": [
+    {
+      "state": [
+        {
+          "type": {
+            "t": "str",
+            "v": "foo"
+          },
+          "handlers": [
+            "h1"
+          ]
+        }
+      ]
+    },
+    {
+      "h": "h1",
+      "args": [
+        {
+          "t": "str",
+          "v": "bar"
+        }
+      ]
+    },
+    {
+      "state": [
+        {
+          "type": {
+            "t": "str",
+            "v": "foo"
+          },
+          "handlers": [
+            "h1"
+          ]
+        }
+      ]
+    }
+  ],
+  "emit-unknown-type-noop": [
+    {
+      "state": [
+        {
+          "type": {
+            "t": "str",
+            "v": "foo"
+          },
+          "handlers": [
+            "h1"
+          ]
+        }
+      ]
+    }
+  ],
+  "multiple-handlers-order": [
+    {
+      "h": "h1",
+      "args": [
+        {
+          "t": "num",
+          "v": 7
+        }
+      ]
+    },
+    {
+      "h": "h2",
+      "args": [
+        {
+          "t": "num",
+          "v": 7
+        }
+      ]
+    },
+    {
+      "h": "h3",
+      "args": [
+        {
+          "t": "num",
+          "v": 7
+        }
+      ]
+    },
+    {
+      "state": [
+        {
+          "type": {
+            "t": "str",
+            "v": "foo"
+          },
+          "handlers": [
+            "h1",
+            "h2",
+            "h3"
+          ]
+        }
+      ]
+    }
+  ],
+  "duplicate-registration-fires-twice": [
+    {
+      "h": "h1",
+      "args": [
+        {
+          "t": "str",
+          "v": "x"
+        }
+      ]
+    },
+    {
+      "h": "h1",
+      "args": [
+        {
+          "t": "str",
+          "v": "x"
+        }
+      ]
+    },
+    {
+      "state": [
+        {
+          "type": {
+            "t": "str",
+            "v": "foo"
+          },
+          "handlers": [
+            "h1",
+            "h1"
+          ]
+        }
+      ]
+    }
+  ],
+  "off-removes-first-duplicate-only": [
+    {
+      "state": [
+        {
+          "type": {
+            "t": "str",
+            "v": "foo"
+          },
+          "handlers": [
+            "h1"
+          ]
+        }
+      ]
+    },
+    {
+      "h": "h1",
+      "args": [
+        {
+          "t": "str",
+          "v": "x"
+        }
+      ]
+    }
+  ],
+  "off-unregistered-handler-is-noop": [
+    {
+      "state": [
+        {
+          "type": {
+            "t": "str",
+            "v": "foo"
+          },
+          "handlers": [
+            "h1",
+            "h2"
+          ]
+        }
+      ]
+    },
+    {
+      "h": "h1",
+      "args": [
+        {
+          "t": "num",
+          "v": 1
+        }
+      ]
+    },
+    {
+      "h": "h2",
+      "args": [
+        {
+          "t": "num",
+          "v": 1
+        }
+      ]
+    }
+  ],
+  "off-unknown-type-does-not-create-entry": [
+    {
+      "state": []
+    }
+  ],
+  "offall-clears-to-empty-keeps-key": [
+    {
+      "state": [
+        {
+          "type": {
+            "t": "str",
+            "v": "foo"
+          },
+          "handlers": []
+        }
+      ]
+    }
+  ],
+  "off-then-reregister": [
+    {
+      "state": [
+        {
+          "type": {
+            "t": "str",
+            "v": "foo"
+          },
+          "handlers": []
+        }
+      ]
+    },
+    {
+      "state": [
+        {
+          "type": {
+            "t": "str",
+            "v": "foo"
+          },
+          "handlers": [
+            "h1"
+          ]
+        }
+      ]
+    },
+    {
+      "h": "h1",
+      "args": [
+        {
+          "t": "str",
+          "v": "again"
+        }
+      ]
+    }
+  ],
+  "wildcard-receives-type-and-payload": [
+    {
+      "h": "h1",
+      "args": [
+        {
+          "t": "str",
+          "v": "p1"
+        }
+      ]
+    },
+    {
+      "h": "w1",
+      "args": [
+        {
+          "t": "str",
+          "v": "foo"
+        },
+        {
+          "t": "str",
+          "v": "p1"
+        }
+      ]
+    },
+    {
+      "h": "w1",
+      "args": [
+        {
+          "t": "str",
+          "v": "bar"
+        },
+        {
+          "t": "num",
+          "v": 2
+        }
+      ]
+    },
+    {
+      "state": [
+        {
+          "type": {
+            "t": "str",
+            "v": "foo"
+          },
+          "handlers": [
+            "h1"
+          ]
+        },
+        {
+          "type": {
+            "t": "str",
+            "v": "*"
+          },
+          "handlers": [
+            "w1"
+          ]
+        }
+      ]
+    }
+  ],
+  "wildcard-only": [
+    {
+      "h": "w1",
+      "args": [
+        {
+          "t": "str",
+          "v": "anything"
+        },
+        {
+          "t": "str",
+          "v": "p"
+        }
+      ]
+    },
+    {
+      "h": "w1",
+      "args": [
+        {
+          "t": "str",
+          "v": "other"
+        },
+        {
+          "t": "undef"
+        }
+      ]
+    },
+    {
+      "state": [
+        {
+          "type": {
+            "t": "str",
+            "v": "*"
+          },
+          "handlers": [
+            "w1"
+          ]
+        }
+      ]
+    }
+  ],
+  "dispatch-order-typed-before-wildcard": [
+    {
+      "h": "h1",
+      "args": [
+        {
+          "t": "num",
+          "v": 9
+        }
+      ]
+    },
+    {
+      "h": "h2",
+      "args": [
+        {
+          "t": "num",
+          "v": 9
+        }
+      ]
+    },
+    {
+      "h": "w1",
+      "args": [
+        {
+          "t": "str",
+          "v": "foo"
+        },
+        {
+          "t": "num",
+          "v": 9
+        }
+      ]
+    },
+    {
+      "h": "w2",
+      "args": [
+        {
+          "t": "str",
+          "v": "foo"
+        },
+        {
+          "t": "num",
+          "v": 9
+        }
+      ]
+    },
+    {
+      "state": [
+        {
+          "type": {
+            "t": "str",
+            "v": "*"
+          },
+          "handlers": [
+            "w1",
+            "w2"
+          ]
+        },
+        {
+          "type": {
+            "t": "str",
+            "v": "foo"
+          },
+          "handlers": [
+            "h1",
+            "h2"
+          ]
+        }
+      ]
+    }
+  ],
+  "emit-wildcard-key-double-invokes": [
+    {
+      "h": "w1",
+      "args": [
+        {
+          "t": "num",
+          "v": 1
+        },
+        {
+          "t": "undef"
+        }
+      ]
+    },
+    {
+      "h": "w1",
+      "args": [
+        {
+          "t": "str",
+          "v": "*"
+        },
+        {
+          "t": "num",
+          "v": 1
+        }
+      ]
+    },
+    {
+      "state": [
+        {
+          "type": {
+            "t": "str",
+            "v": "*"
+          },
+          "handlers": [
+            "w1"
+          ]
+        }
+      ]
+    }
+  ],
+  "emit-wildcard-key-string-payload": [
+    {
+      "h": "w1",
+      "args": [
+        {
+          "t": "str",
+          "v": "pay"
+        },
+        {
+          "t": "undef"
+        }
+      ]
+    },
+    {
+      "h": "w1",
+      "args": [
+        {
+          "t": "str",
+          "v": "*"
+        },
+        {
+          "t": "str",
+          "v": "pay"
+        }
+      ]
+    },
+    {
+      "state": [
+        {
+          "type": {
+            "t": "str",
+            "v": "*"
+          },
+          "handlers": [
+            "w1"
+          ]
+        }
+      ]
+    }
+  ],
+  "emit-wildcard-key-undefined-payload": [
+    {
+      "h": "w1",
+      "args": [
+        {
+          "t": "undef"
+        },
+        {
+          "t": "undef"
+        }
+      ]
+    },
+    {
+      "h": "w1",
+      "args": [
+        {
+          "t": "str",
+          "v": "*"
+        },
+        {
+          "t": "undef"
+        }
+      ]
+    },
+    {
+      "state": [
+        {
+          "type": {
+            "t": "str",
+            "v": "*"
+          },
+          "handlers": [
+            "w1"
+          ]
+        }
+      ]
+    }
+  ],
+  "single-arg-handler-on-wildcard-gets-type": [
+    {
+      "h": "h1",
+      "args": [
+        {
+          "t": "str",
+          "v": "foo"
+        }
+      ]
+    },
+    {
+      "h": "h1",
+      "args": [
+        {
+          "t": "str",
+          "v": "bar"
+        }
+      ]
+    },
+    {
+      "state": [
+        {
+          "type": {
+            "t": "str",
+            "v": "*"
+          },
+          "handlers": [
+            "h1"
+          ]
+        }
+      ]
+    }
+  ],
+  "single-arg-handler-on-wildcard-symbol-type": [
+    {
+      "h": "h1",
+      "args": [
+        {
+          "t": "sym",
+          "v": "A"
+        }
+      ]
+    },
+    {
+      "state": [
+        {
+          "type": {
+            "t": "str",
+            "v": "*"
+          },
+          "handlers": [
+            "h1"
+          ]
+        }
+      ]
+    }
+  ],
+  "wildcard-off": [
+    {
+      "h": "w2",
+      "args": [
+        {
+          "t": "str",
+          "v": "foo"
+        },
+        {
+          "t": "num",
+          "v": 1
+        }
+      ]
+    },
+    {
+      "state": [
+        {
+          "type": {
+            "t": "str",
+            "v": "*"
+          },
+          "handlers": [
+            "w2"
+          ]
+        }
+      ]
+    }
+  ],
+  "wildcard-offall": [
+    {
+      "state": [
+        {
+          "type": {
+            "t": "str",
+            "v": "*"
+          },
+          "handlers": []
+        }
+      ]
+    }
+  ],
+  "symbol-keys-identity": [
+    {
+      "h": "h1",
+      "args": [
+        {
+          "t": "str",
+          "v": "a"
+        }
+      ]
+    },
+    {
+      "h": "h2",
+      "args": [
+        {
+          "t": "str",
+          "v": "b"
+        }
+      ]
+    },
+    {
+      "state": [
+        {
+          "type": {
+            "t": "sym",
+            "v": "A"
+          },
+          "handlers": [
+            "h1"
+          ]
+        },
+        {
+          "type": {
+            "t": "sym",
+            "v": "B"
+          },
+          "handlers": [
+            "h2"
+          ]
+        }
+      ]
+    }
+  ],
+  "symbol-same-description-distinct": [
+    {
+      "h": "h1",
+      "args": [
+        {
+          "t": "str",
+          "v": "yes"
+        }
+      ]
+    },
+    {
+      "state": [
+        {
+          "type": {
+            "t": "sym",
+            "v": "A"
+          },
+          "handlers": [
+            "h1"
+          ]
+        }
+      ]
+    }
+  ],
+  "symbol-and-string-coexist": [
+    {
+      "h": "h1",
+      "args": [
+        {
+          "t": "num",
+          "v": 1
+        }
+      ]
+    },
+    {
+      "h": "h2",
+      "args": [
+        {
+          "t": "num",
+          "v": 2
+        }
+      ]
+    },
+    {
+      "state": [
+        {
+          "type": {
+            "t": "sym",
+            "v": "A"
+          },
+          "handlers": [
+            "h1"
+          ]
+        },
+        {
+          "type": {
+            "t": "str",
+            "v": "A"
+          },
+          "handlers": [
+            "h2"
+          ]
+        }
+      ]
+    }
+  ],
+  "case-sensitivity": [
+    {
+      "h": "h1",
+      "args": [
+        {
+          "t": "num",
+          "v": 1
+        }
+      ]
+    },
+    {
+      "h": "h2",
+      "args": [
+        {
+          "t": "num",
+          "v": 2
+        }
+      ]
+    },
+    {
+      "h": "h3",
+      "args": [
+        {
+          "t": "num",
+          "v": 3
+        }
+      ]
+    },
+    {
+      "state": [
+        {
+          "type": {
+            "t": "str",
+            "v": "foo"
+          },
+          "handlers": [
+            "h1"
+          ]
+        },
+        {
+          "type": {
+            "t": "str",
+            "v": "FOO"
+          },
+          "handlers": [
+            "h2"
+          ]
+        },
+        {
+          "type": {
+            "t": "str",
+            "v": "Foo"
+          },
+          "handlers": [
+            "h3"
+          ]
+        }
+      ]
+    }
+  ],
+  "exotic-string-keys": [
+    {
+      "h": "h1",
+      "args": [
+        {
+          "t": "num",
+          "v": 1
+        }
+      ]
+    },
+    {
+      "h": "h2",
+      "args": [
+        {
+          "t": "num",
+          "v": 2
+        }
+      ]
+    },
+    {
+      "h": "h3",
+      "args": [
+        {
+          "t": "num",
+          "v": 3
+        }
+      ]
+    },
+    {
+      "h": "h4",
+      "args": [
+        {
+          "t": "num",
+          "v": 4
+        }
+      ]
+    },
+    {
+      "h": "h5",
+      "args": [
+        {
+          "t": "num",
+          "v": 5
+        }
+      ]
+    },
+    {
+      "h": "h6",
+      "args": [
+        {
+          "t": "num",
+          "v": 6
+        }
+      ]
+    },
+    {
+      "state": [
+        {
+          "type": {
+            "t": "str",
+            "v": "constructor"
+          },
+          "handlers": [
+            "h1"
+          ]
+        },
+        {
+          "type": {
+            "t": "str",
+            "v": "__proto__"
+          },
+          "handlers": [
+            "h2"
+          ]
+        },
+        {
+          "type": {
+            "t": "str",
+            "v": ""
+          },
+          "handlers": [
+            "h3"
+          ]
+        },
+        {
+          "type": {
+            "t": "str",
+            "v": "hasOwnProperty"
+          },
+          "handlers": [
+            "h4"
+          ]
+        },
+        {
+          "type": {
+            "t": "str",
+            "v": "toString"
+          },
+          "handlers": [
+            "h5"
+          ]
+        },
+        {
+          "type": {
+            "t": "str",
+            "v": "日本語 🎉"
+          },
+          "handlers": [
+            "h6"
+          ]
+        }
+      ]
+    }
+  ],
+  "insertion-order-preserved": [
+    {
+      "state": [
+        {
+          "type": {
+            "t": "str",
+            "v": "z"
+          },
+          "handlers": [
+            "h1"
+          ]
+        },
+        {
+          "type": {
+            "t": "str",
+            "v": "a"
+          },
+          "handlers": [
+            "h2"
+          ]
+        },
+        {
+          "type": {
+            "t": "str",
+            "v": "m"
+          },
+          "handlers": [
+            "h3"
+          ]
+        },
+        {
+          "type": {
+            "t": "str",
+            "v": "b"
+          },
+          "handlers": [
+            "h4"
+          ]
+        },
+        {
+          "type": {
+            "t": "str",
+            "v": "y"
+          },
+          "handlers": [
+            "h5"
+          ]
+        }
+      ]
+    },
+    {
+      "state": [
+        {
+          "type": {
+            "t": "str",
+            "v": "z"
+          },
+          "handlers": [
+            "h1"
+          ]
+        },
+        {
+          "type": {
+            "t": "str",
+            "v": "a"
+          },
+          "handlers": [
+            "h2"
+          ]
+        },
+        {
+          "type": {
+            "t": "str",
+            "v": "m"
+          },
+          "handlers": []
+        },
+        {
+          "type": {
+            "t": "str",
+            "v": "b"
+          },
+          "handlers": [
+            "h4"
+          ]
+        },
+        {
+          "type": {
+            "t": "str",
+            "v": "y"
+          },
+          "handlers": [
+            "h5"
+          ]
+        },
+        {
+          "type": {
+            "t": "str",
+            "v": "c"
+          },
+          "handlers": [
+            "h6"
+          ]
+        }
+      ]
+    }
+  ],
+  "undefined-payload": [
+    {
+      "h": "h1",
+      "args": [
+        {
+          "t": "undef"
+        }
+      ]
+    },
+    {
+      "h": "w1",
+      "args": [
+        {
+          "t": "str",
+          "v": "foo"
+        },
+        {
+          "t": "undef"
+        }
+      ]
+    },
+    {
+      "state": [
+        {
+          "type": {
+            "t": "str",
+            "v": "foo"
+          },
+          "handlers": [
+            "h1"
+          ]
+        },
+        {
+          "type": {
+            "t": "str",
+            "v": "*"
+          },
+          "handlers": [
+            "w1"
+          ]
+        }
+      ]
+    }
+  ],
+  "number-payloads": [
+    {
+      "h": "h1",
+      "args": [
+        {
+          "t": "num",
+          "v": 0
+        }
+      ]
+    },
+    {
+      "h": "w1",
+      "args": [
+        {
+          "t": "str",
+          "v": "n"
+        },
+        {
+          "t": "num",
+          "v": 0
+        }
+      ]
+    },
+    {
+      "h": "h1",
+      "args": [
+        {
+          "t": "num",
+          "v": -1
+        }
+      ]
+    },
+    {
+      "h": "w1",
+      "args": [
+        {
+          "t": "str",
+          "v": "n"
+        },
+        {
+          "t": "num",
+          "v": -1
+        }
+      ]
+    },
+    {
+      "h": "h1",
+      "args": [
+        {
+          "t": "num",
+          "v": 2147483647
+        }
+      ]
+    },
+    {
+      "h": "w1",
+      "args": [
+        {
+          "t": "str",
+          "v": "n"
+        },
+        {
+          "t": "num",
+          "v": 2147483647
+        }
+      ]
+    },
+    {
+      "state": [
+        {
+          "type": {
+            "t": "str",
+            "v": "n"
+          },
+          "handlers": [
+            "h1"
+          ]
+        },
+        {
+          "type": {
+            "t": "str",
+            "v": "*"
+          },
+          "handlers": [
+            "w1"
+          ]
+        }
+      ]
+    }
+  ],
+  "many-events-interleaved": [
+    {
+      "h": "h1",
+      "args": [
+        {
+          "t": "num",
+          "v": 1
+        }
+      ]
+    },
+    {
+      "h": "h3",
+      "args": [
+        {
+          "t": "num",
+          "v": 1
+        }
+      ]
+    },
+    {
+      "h": "w1",
+      "args": [
+        {
+          "t": "str",
+          "v": "a"
+        },
+        {
+          "t": "num",
+          "v": 1
+        }
+      ]
+    },
+    {
+      "h": "h3",
+      "args": [
+        {
+          "t": "num",
+          "v": 2
+        }
+      ]
+    },
+    {
+      "h": "w1",
+      "args": [
+        {
+          "t": "str",
+          "v": "a"
+        },
+        {
+          "t": "num",
+          "v": 2
+        }
+      ]
+    },
+    {
+      "h": "w1",
+      "args": [
+        {
+          "t": "str",
+          "v": "b"
+        },
+        {
+          "t": "num",
+          "v": 3
+        }
+      ]
+    },
+    {
+      "h": "h4",
+      "args": [
+        {
+          "t": "num",
+          "v": 4
+        }
+      ]
+    },
+    {
+      "h": "w1",
+      "args": [
+        {
+          "t": "str",
+          "v": "b"
+        },
+        {
+          "t": "num",
+          "v": 4
+        }
+      ]
+    },
+    {
+      "h": "h3",
+      "args": [
+        {
+          "t": "num",
+          "v": 5
+        }
+      ]
+    },
+    {
+      "state": [
+        {
+          "type": {
+            "t": "str",
+            "v": "a"
+          },
+          "handlers": [
+            "h3"
+          ]
+        },
+        {
+          "type": {
+            "t": "str",
+            "v": "b"
+          },
+          "handlers": [
+            "h4"
+          ]
+        },
+        {
+          "type": {
+            "t": "str",
+            "v": "*"
+          },
+          "handlers": []
+        }
+      ]
+    }
+  ],
+  "handler-shared-across-types": [
+    {
+      "h": "h1",
+      "args": [
+        {
+          "t": "num",
+          "v": 2
+        }
+      ]
+    },
+    {
+      "state": [
+        {
+          "type": {
+            "t": "str",
+            "v": "a"
+          },
+          "handlers": []
+        },
+        {
+          "type": {
+            "t": "str",
+            "v": "b"
+          },
+          "handlers": [
+            "h1"
+          ]
+        }
+      ]
+    }
+  ],
+  "wildcard-handler-also-on-typed": [
+    {
+      "h": "w1",
+      "args": [
+        {
+          "t": "str",
+          "v": "p"
+        },
+        {
+          "t": "undef"
+        }
+      ]
+    },
+    {
+      "h": "w1",
+      "args": [
+        {
+          "t": "str",
+          "v": "foo"
+        },
+        {
+          "t": "str",
+          "v": "p"
+        }
+      ]
+    },
+    {
+      "state": [
+        {
+          "type": {
+            "t": "str",
+            "v": "foo"
+          },
+          "handlers": [
+            "w1"
+          ]
+        },
+        {
+          "type": {
+            "t": "str",
+            "v": "*"
+          },
+          "handlers": [
+            "w1"
+          ]
+        }
+      ]
+    }
+  ],
+  "emit-before-any-registration": [
+    {
+      "state": []
+    },
+    {
+      "h": "h1",
+      "args": [
+        {
+          "t": "num",
+          "v": 2
+        }
+      ]
+    }
+  ],
+  "repeated-offall-idempotent": [
+    {
+      "state": [
+        {
+          "type": {
+            "t": "str",
+            "v": "foo"
+          },
+          "handlers": []
+        }
+      ]
+    }
+  ]
+}

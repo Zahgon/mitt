@@ -1,205 +1,188 @@
 <p align="center">
   <img src="https://i.imgur.com/BqsX9NT.png" width="300" height="300" alt="mitt">
-  <br>
-  <a href="https://www.npmjs.org/package/mitt"><img src="https://img.shields.io/npm/v/mitt.svg" alt="npm"></a>
-  <img src="https://github.com/developit/mitt/workflows/CI/badge.svg" alt="build status">
-  <a href="https://unpkg.com/mitt/dist/mitt.js"><img src="https://img.badgesize.io/https://unpkg.com/mitt/dist/mitt.js?compression=gzip" alt="gzip size"></a>
 </p>
 
-# Mitt
+# mitt-go
 
-> Tiny 200b functional event emitter / pubsub.
+> Tiny functional event emitter / pubsub — a Go port of [mitt](https://github.com/developit/mitt).
 
--   **Microscopic:** weighs less than 200 bytes gzipped
+-   **Microscopic:** the entire emitter is a few hundred lines with no dependencies
 -   **Useful:** a wildcard `"*"` event type listens to all events
--   **Familiar:** same names & ideas as [Node's EventEmitter](https://nodejs.org/api/events.html#events_class_eventemitter)
--   **Functional:** methods don't rely on `this`
--   **Great Name:** somehow [mitt](https://npm.im/mitt) wasn't taken
+-   **Familiar:** same names & ideas as the original `mitt`
+-   **Functional:** methods don't rely on hidden global state
+-   **Faithful:** behaviour is verified against the JavaScript original, quirks included
 
-Mitt was made for the browser, but works in any JavaScript runtime. It has no dependencies and supports IE9+.
+This is a complete, functionally equivalent port of mitt v3.0.1. Every observable
+behaviour of the original — including its surprising edge cases — is reproduced
+and pinned by a test. See [DESIGN.md](DESIGN.md) for the porting decisions.
 
 ## Table of Contents
 
 -   [Install](#install)
 -   [Usage](#usage)
--   [Examples & Demos](#examples--demos)
 -   [API](#api)
+-   [Differences from the JavaScript original](#differences-from-the-javascript-original)
+-   [Behavioural parity](#behavioural-parity)
 -   [Contribute](#contribute)
 -   [License](#license)
 
 ## Install
 
-This project uses [node](http://nodejs.org) and [npm](https://npmjs.com). Go check them out if you don't have them locally installed.
-
 ```sh
-$ npm install --save mitt
+go get github.com/developit/mitt-go
 ```
 
-Then with a module bundler like [rollup](http://rollupjs.org/) or [webpack](https://webpack.js.org/), use as you would anything else:
-
-```javascript
-// using ES6 modules
-import mitt from 'mitt'
-
-// using CommonJS modules
-var mitt = require('mitt')
+```go
+import mitt "github.com/developit/mitt-go"
 ```
 
-The [UMD](https://github.com/umdjs/umd) build is also available on [unpkg](https://unpkg.com):
-
-```html
-<script src="https://unpkg.com/mitt/dist/mitt.umd.js"></script>
-```
-
-You can find the library on `window.mitt`.
+Requires Go 1.21 or newer (generics and `any`).
 
 ## Usage
 
-```js
-import mitt from 'mitt'
-
-const emitter = mitt()
+```go
+e := mitt.New[any]()
 
 // listen to an event
-emitter.on('foo', e => console.log('foo', e) )
+e.OnFunc(mitt.Key("foo"), func(ev any) { fmt.Println("foo", ev) })
 
 // listen to all events
-emitter.on('*', (type, e) => console.log(type, e) )
+e.OnWildcardFunc(func(t mitt.EventType, ev any) { fmt.Println(t, ev) })
 
 // fire an event
-emitter.emit('foo', { a: 'b' })
+e.Emit(mitt.Key("foo"), map[string]string{"a": "b"})
 
 // clearing all events
-emitter.all.clear()
+e.All().Clear()
 
-// working with handler references:
-function onFoo() {}
-emitter.on('foo', onFoo)   // listen
-emitter.off('foo', onFoo)  // unlisten
+// working with handler references
+onFoo := e.OnFunc(mitt.Key("foo"), func(any) {}) // listen
+e.Off(mitt.Key("foo"), onFoo)                    // unlisten
 ```
 
-### Typescript
+### Typed events
 
-Set `"strict": true` in your tsconfig.json to get improved type inference for `mitt` instance methods.
+The original library gets its type safety from a TypeScript `Events` map. In Go
+the equivalent is either a concrete payload type on the emitter:
 
-```ts
-import mitt from 'mitt';
-
-type Events = {
-  foo: string;
-  bar?: number;
-};
-
-const emitter = mitt<Events>(); // inferred as Emitter<Events>
-
-emitter.on('foo', (e) => {}); // 'e' has inferred type 'string'
-
-emitter.emit('foo', 42); // Error: Argument of type 'number' is not assignable to parameter of type 'string'. (2345)
+```go
+e := mitt.New[string]()
+e.OnFunc(mitt.Key("greeting"), func(s string) { fmt.Println("hello,", s) })
+e.Emit(mitt.Key("greeting"), "world")
 ```
 
-Alternatively, you can use the provided `Emitter` type:
+…or per-event payload assertions on a heterogeneous emitter:
 
-```ts
-import mitt, { Emitter } from 'mitt';
+```go
+e := mitt.New[any]()
 
-type Events = {
-  foo: string;
-  bar?: number;
-};
-
-const emitter: Emitter<Events> = mitt<Events>();
+mitt.OnTyped[any, LoginEvent](e, mitt.Key("login"), func(ev LoginEvent) {
+    fmt.Println(ev.User)
+})
+mitt.EmitTyped[any, LoginEvent](e, mitt.Key("login"), LoginEvent{User: "jack"})
 ```
 
-## Examples & Demos
+`OnTyped` panics if a payload of the wrong type is delivered, which is the
+closest runtime analogue to TypeScript rejecting the call at compile time.
 
-<a href="http://codepen.io/developit/pen/rjMEwW?editors=0110">
-  <b>Preact + Mitt Codepen Demo</b>
-  <br>
-  <img src="https://i.imgur.com/CjBgOfJ.png" width="278" alt="preact + mitt preview">
-</a>
+### Symbol keys
 
-* * *
+JavaScript symbols are unique by reference, not by description. `mitt.Sym`
+reproduces that: two symbols with the same description are different events.
+
+```go
+secret := mitt.Sym("secret")
+e.OnFunc(secret, func(ev any) { fmt.Println(ev) })
+
+e.Emit(mitt.Sym("secret"), "ignored")   // different symbol, no handler runs
+e.Emit(secret, "delivered")
+```
+
+### Concurrency
+
+`New` matches the original exactly: no synchronisation, like single-threaded JS.
+If you need to share an emitter across goroutines, use `NewSync`, which
+serialises registry access and dispatches outside the lock so handlers may
+safely re-enter the emitter.
+
+```go
+e := mitt.NewSync[any]()
+```
 
 ## API
 
-<!-- Generated by documentation.js. Update this documentation by updating the source code. -->
+| mitt (TS)                     | mitt-go                                        |
+| ----------------------------- | ---------------------------------------------- |
+| `mitt<Events>()`              | `mitt.New[E]()`                                 |
+| `mitt<Events>(all)`           | `mitt.NewWith[E](all)`                          |
+| `emitter.all`                 | `e.All() *HandlerMap[E]`                        |
+| `emitter.on(type, handler)`   | `e.On(type, h)` / `e.OnFunc(type, fn)`          |
+| `emitter.on('*', handler)`    | `e.OnWildcard(h)` / `e.OnWildcardFunc(fn)`      |
+| `emitter.off(type, handler)`  | `e.Off(type, h)`                                |
+| `emitter.off(type)`           | `e.OffAll(type)`                                |
+| `emitter.emit(type, evt)`     | `e.Emit(type, evt)`                             |
+| `emitter.emit(type)`          | `e.EmitVoid(type)`                              |
+| `emitter.all.clear()`         | `e.All().Clear()`                               |
+| `type EventType = string \| symbol` | `mitt.EventType` (`Key` \| `*Symbol` \| `*Raw`) |
+| `'*'`                         | `mitt.Wildcard`                                 |
 
-#### Table of Contents
+`On`, `OnFunc`, `OnWildcard` and `OnWildcardFunc` return the registration handle
+you pass back to `Off`.
 
--   [mitt](#mitt)
--   [all](#all)
--   [on](#on)
-    -   [Parameters](#parameters)
--   [off](#off)
-    -   [Parameters](#parameters-1)
--   [emit](#emit)
-    -   [Parameters](#parameters-2)
+## Differences from the JavaScript original
 
-### mitt
+These are consequences of the target language, not behaviour changes.
 
-Mitt: Tiny (~200b) functional event emitter / pubsub.
+-   **Handlers are handles, not bare funcs.** JS removes listeners by reference
+    identity; Go funcs are not comparable. `OnFunc` returns a `*Handler[E]` that
+    plays the role of the function reference. See
+    [DESIGN.md](DESIGN.md#handler-identity).
+-   **Event keys are a sealed union.** `EventType` is `Key` (string) or
+    `*Symbol`, mirroring `string | symbol`. Outside types cannot implement it,
+    which guarantees every key is a valid Go map key.
+-   **`all` is `*HandlerMap[E]`, not a raw map.** A JS `Map` preserves insertion
+    order and Go maps do not, so the port keeps an ordered structure. It exposes
+    `Get`/`Set`/`Has`/`Delete`/`Len`/`Clear`/`Keys`/`Range` and is fully live:
+    mutating it changes emitter behaviour, exactly as in the original.
+-   **A throwing handler is a panicking handler.** It propagates to the caller of
+    `Emit` and aborts the remaining dispatch, matching JS exception semantics.
+-   **`New` is not goroutine-safe**, because the original isn't either. `NewSync`
+    is the opt-in concurrent variant.
 
-Returns **Mitt** 
+## Behavioural parity
 
-### all
+Each of these was confirmed by running the original JavaScript, then pinned by a
+test in `invariants_test.go`.
 
-A Map of event names to registered handler functions.
-
-### on
-
-Register an event handler for the given type.
-
-#### Parameters
-
--   `type` **([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [symbol](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Symbol))** Type of event to listen for, or `'*'` for all events
--   `handler` **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** Function to call in response to given event
-
-### off
-
-Remove an event handler for the given type.
-If `handler` is omitted, all handlers of the given type are removed.
-
-#### Parameters
-
--   `type` **([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [symbol](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Symbol))** Type of event to unregister `handler` from, or `'*'`
--   `handler` **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)?** Handler function to remove
-
-### emit
-
-Invoke all handlers for the given type.
-If present, `'*'` handlers are invoked after type-matched handlers.
-
-Note: Manually firing '\*' handlers is not supported.
-
-#### Parameters
-
--   `type` **([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [symbol](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Symbol))** The event type to invoke
--   `evt` **Any?** Any value (object is recommended and powerful), passed to each handler
+| Behaviour | Notes |
+| --- | --- |
+| `off` with an unregistered handler | Silent no-op. In JS `indexOf` returns `-1` and `-1 >>> 0` is `4294967295`, so the `splice` is out of range and removes nothing. A naive port removes the last handler instead. |
+| `off(type)` with no handler | Sets the entry to an empty list; the key remains present. |
+| `off` on an unknown type | Does not create an entry. |
+| Duplicate registration | Allowed; the handler fires once per registration. |
+| `off` with duplicates | Removes only the first occurrence. |
+| Dispatch order | All handlers for the type, then all wildcard handlers. |
+| Handler list snapshot | The type's list is copied before dispatch, so handlers added during an emit do not fire, and handlers removed during an emit still do. |
+| Wildcard lookup timing | The wildcard list is read *after* the typed handlers run, so a wildcard handler registered mid-dispatch does fire in the same emit. |
+| `emit('*', payload)` | Invokes a wildcard handler twice: once via the type lookup, once via the wildcard lookup. |
+| One-argument handler on `'*'` | Receives the event type, not the payload — JS truncates extra arguments. |
+| Event keys | Compared exactly; no case normalisation. |
+| Symbols | Unique by identity, never by description. |
+| Unknown type | Emitting is a no-op. |
+| Dispatch | Fully synchronous. |
 
 ## Contribute
 
-First off, thanks for taking the time to contribute!
-Now, take a moment to be sure your contributions make sense to everyone else.
+```sh
+go test ./...          # run the suite
+go test ./... -race    # race detector
+make check             # fmt, vet, lint, race, coverage
+```
 
-### Reporting Issues
-
-Found a problem? Want a new feature? First of all see if your issue or idea has [already been reported](../../issues).
-If don't, just open a [new clear and descriptive issue](../../issues/new).
-
-### Submitting pull requests
-
-Pull requests are the greatest contributions, so be sure they are focused in scope, and do avoid unrelated commits.
-
--   Fork it!
--   Clone your fork: `git clone https://github.com/<your-username>/mitt`
--   Navigate to the newly cloned directory: `cd mitt`
--   Create a new branch for the new feature: `git checkout -b my-new-feature`
--   Install the tools necessary for development: `npm install`
--   Make your changes.
--   Commit your changes: `git commit -am 'Add some feature'`
--   Push to the branch: `git push origin my-new-feature`
--   Submit a pull request with full remarks documenting your changes.
+`testdata/fail` holds programs that must **not** compile; they are the port of
+mitt's `@ts-expect-error` type tests and are verified by `typecheck_test.go`.
 
 ## License
 
-[MIT License](https://opensource.org/licenses/MIT) © [Jason Miller](https://jasonformat.com/)
+MIT © [Jason Miller](https://github.com/developit) — see [LICENSE](LICENSE).
+The Go port preserves the original copyright.

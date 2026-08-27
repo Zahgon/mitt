@@ -1,0 +1,24 @@
+version: "2"
+
+linters:
+  enable:
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - misspell
+    - revive
+    - unconvert
+    - bodyclose
+
+  exclusions:
+    rules:
+      # Fixtures in testdata are deliberately uncompilable.
+      - path: testdata/
+        linters:
+          - typecheck
+
+formatters:
+  enable:
+    - gofmt

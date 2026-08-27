@@ -1,0 +1,14 @@
+{
+  "source_command": "npx --no-install tsx demo/cli.ts",
+  "migrated_command": "go run ./cmd/mittdemo",
+  "cases": [
+    { "name": "basic", "args": ["basic"] },
+    { "name": "wildcard", "args": ["wildcard"] },
+    { "name": "duplicate", "args": ["duplicate"] },
+    { "name": "off-unregistered", "args": ["off-unregistered"] },
+    { "name": "emit-star", "args": ["emit-star"] },
+    { "name": "symbols", "args": ["symbols"] },
+    { "name": "usage", "args": ["bogus"], "compare": "exit" },
+    { "name": "bare", "args": [], "compare": "exit" }
+  ]
+}
